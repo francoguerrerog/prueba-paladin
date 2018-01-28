@@ -13,11 +13,10 @@ function productsreducers( state = INITIAL_STATE, action ) {
 			const filterData = state.products.filter((a) => {
 				return a.sublevel_id === action.payload;
 			})
-			console.log(filterData);
 			return { ...state, filterProducts: filterData };
 		default:
 			return state;
-	}
+		}
 }
 
 export default productsreducers;
