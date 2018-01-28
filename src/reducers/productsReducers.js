@@ -7,16 +7,16 @@ const INITIAL_STATE = {
 
 function productsreducers( state = INITIAL_STATE, action ) {
 	switch ( action.type ) {
-		case types.LOAD_PRODUCTS:
-			return { ...state, products: action.payload };
-		case types.FILTER_PRODUCTS_BY_SUBLEVEL:
-			const filterData = state.products.filter((a) => {
-				return a.sublevel_id === action.payload;
-			})
-			return { ...state, filterProducts: filterData };
-		default:
-			return state;
-		}
+	case types.LOAD_PRODUCTS:
+		return { ...state, products: action.payload };
+	case types.FILTER_PRODUCTS_BY_SUBLEVEL:
+		const filterData = state.products.filter((a) => {
+			return a.sublevel_id === action.payload;
+		})
+		return { ...state, filterProducts: filterData };
+	default:
+		return state;
+	}
 }
 
 export default productsreducers;
