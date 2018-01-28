@@ -1,9 +1,7 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
-
 import { browserHistory } from 'react-router';
-
-import '../../index.css';
+import { Layout, Menu, Icon } from 'antd';
 
 import categoriesData from '../assets/categories.json';
 import productsData from '../assets/products.json';
@@ -11,7 +9,8 @@ import productsData from '../assets/products.json';
 import { loadCategories } from '../actions/categoriesActions';
 import { loadProducts } from '../actions/productsActions';
 
-import { Layout, Menu, Icon } from 'antd';
+import '../../index.css';
+
 const { Header, Content, Footer, Sider } = Layout;
 const { SubMenu } = Menu
 
@@ -42,10 +41,10 @@ class App extends Component {
 						<SubMenu
 							key={a.id+a.name}
 							title={
-								<span>
+								<div>
 									<Icon type="user" />
 									<span className="nav-text">{ a.name }</span>
-								</span>
+								</div>
 							}
 						>
 						{this.renderSublevel(a.sublevels)}
@@ -53,15 +52,10 @@ class App extends Component {
 					);
 				}
 				return(
-					<Menu.Item key={a.id} >
-					<span
-						className="nav-text"
-						onClick={() => {
-							browserHistory.push({ pathname: '/product', search: '?id='+a.id, state: { id: a.id }})
-						}}
-					>
-						{ a.name }
-					</span>
+					<Menu.Item key={a.id}>
+						<div onClick={() => { browserHistory.push({ pathname: '/product', search: '?id='+a.id, state: { id: a.id, name: a.name }}) }} >
+							<span className="nav-text">{a.name}</span>
+						</div>
 					</Menu.Item>
 				);
 			})
@@ -79,13 +73,17 @@ class App extends Component {
 					<div className="logo" />
 					<Menu theme="dark" mode="inline" defaultSelectedKeys={['Home']}>
 						<Menu.Item key="Home">
-							<Icon type="user" />
-							<span className="nav-text" onClick={() => { browserHistory.push('/') }}>Inicio</span>
+							<div onClick={() => { browserHistory.push('/') }}>
+								<Icon type="user" />
+								<span className="nav-text">Inicio</span>
+							</div>
 						</Menu.Item>
 						{this.renderSublevel(this.state.categories)}
 						<Menu.Item key="Cart">
-							<Icon type="user" />
-							<span className="nav-text" onClick={() => { browserHistory.push('/cart') }}>Carrito</span>
+							<div onClick={() => { browserHistory.push('/cart') }}>
+								<Icon type="user" />
+								<span className="nav-text">Carrito</span>
+							</div>
 						</Menu.Item>
 					</Menu>
 				</Sider>
