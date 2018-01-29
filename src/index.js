@@ -2,16 +2,18 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 import { Provider } from 'react-redux';
 import { createStore, applyMiddleware } from 'redux';
-import thunk from 'redux-thunk';
-import promise from 'redux-promise';
+import { PersistGate } from 'redux-persist/lib/integration/react'
 import reducers from './reducers';
 import RenderRoutes from './routes';
 import '../index.css';
 
-const createStoreWithMiddleware = applyMiddleware(thunk, promise)(createStore);
+import configureStore from './store/configureStore'
+let { store, persistor } = configureStore()
 
 ReactDOM.render(
-	<Provider store={createStoreWithMiddleware(reducers)}>
-		<RenderRoutes />
+	<Provider store={store}>
+      	<PersistGate loading={null} persistor={persistor}>
+			<RenderRoutes />
+		</PersistGate>
     </Provider>,
 document.getElementById('root'));

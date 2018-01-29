@@ -149,7 +149,7 @@ class Products extends Component {
 				key: 'action',
 				render: (text, record) => (
 					<span>
-						<InputNumber min={1} max={record.quantity} defaultValue={record.cart} onChange={(value) => {record.cart = value}} />
+						<InputNumber min={1} max={record.quantity} defaultValue={1} onChange={(value) => {record.cart = value}} />
 						<Divider type='vertical' />
 						<Button type="primary" htmlType="submit" onClick={() => {this.addItemToCart(record);}} ><Icon type="shopping-cart" /></Button>
 					</span>
