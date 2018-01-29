@@ -42,7 +42,7 @@ class App extends Component {
 							key={a.id+a.name}
 							title={
 								<div>
-									<Icon type="user" />
+									<Icon type="right" />
 									<span className="nav-text">{ a.name }</span>
 								</div>
 							}
@@ -74,14 +74,14 @@ class App extends Component {
 					<Menu theme="dark" mode="inline" defaultSelectedKeys={['Home']}>
 						<Menu.Item key="Home">
 							<div onClick={() => { browserHistory.push('/') }}>
-								<Icon type="user" />
+								<Icon type="home" />
 								<span className="nav-text">Inicio</span>
 							</div>
 						</Menu.Item>
 						{this.renderSublevel(this.state.categories)}
 						<Menu.Item key="Cart">
 							<div onClick={() => { browserHistory.push('/cart') }}>
-								<Icon type="user" />
+								<Icon type="shopping-cart" />
 								<span className="nav-text">Carrito</span>
 							</div>
 						</Menu.Item>
