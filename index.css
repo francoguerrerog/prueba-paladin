@@ -4,9 +4,9 @@ html, body, #root {
 }
 
 .logo {
-  height: 32px;
-  background: rgba(255,255,255,.2);
-  margin: 16px;
+  height: 45px;
+  background: rgba(255,255,255,0);
+  margin: 8px;
 }
 
 .custom-filter-dropdown {

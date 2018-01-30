@@ -15,14 +15,20 @@ class Products extends Component {
 		super(props);
 		this.state = {
 			filterProducts: [],
+			editFilterProducts: [],
 			sublevelId: 0,
 			sublevelName: 'Producto',
 			isFilter: false,
 			filteredProducts: [],
+			editFilteredProducts: [],
 			filterPriceVisible: false,
-			priceRange: { 0: '0', 200: '200'},
+			priceRange: { 0: '0', 100: '100'},
+			minPrice: 0,
+			maxPrice: 100,
 			filterQantityVisible: false,
-			quantityRange: { 0: '0', 200: '200'}
+			quantityRange: { 0: '0', 100: '100'},
+			minQuantity: 0,
+			maxQuantity: 100
 		}
 	}
 
@@ -40,16 +46,20 @@ class Products extends Component {
 			return (prev< current) ? prev : current
 		})
 
+		var tmpItems = nextProps.filterProducts.map((a) => {
+			return { cart: 1 };
+		})
+
 		this.setState({
 			priceRange: { [parseInt(minPrice.replace(/\D/g,''))]: minPrice, [parseInt(maxPrice.replace(/\D/g,''))]: maxPrice },
 			quantityRange: { [minQuantity]: minQuantity, [maxQuantity]: maxQuantity },
+			minPrice: parseInt(minPrice.replace(/\D/g,'')),
+			maxPrice: parseInt(maxPrice.replace(/\D/g,'')),
+			minQuantity,
+			maxQuantity,
 			products: nextProps.products,
-			filterProducts: nextProps.filterProducts.map((a) => {
-				a.cart = 1;
-				return a;
-			})
-		}, () => {
-			//console.log(this.state.priceRange, this.state.quantityRange);
+			filterProducts: nextProps.filterProducts,
+			editFilterProducts: tmpItems
 		});
 	}
 
@@ -77,21 +87,59 @@ class Products extends Component {
 		if (value === '') {
 			this.setState({
 				isFilter: false,
-				filteredProducts: []
+				filteredProducts: [],
+				editFilteredProducts: []
 			})
 			return;
 		}
 		const data = this.state.filterProducts.filter((a) => {
 			return a.name.includes(value);
 		})
+		var tmpItems = data.map((a) => {
+			return { cart: 1 };
+		})
 		this.setState({
 			isFilter: true,
-			filteredProducts: data
+			filteredProducts: data,
+			editFilteredProducts: tmpItems
 		})
 	}
 
-	addItemToCart(item) {
-		this.props.addItem(item);
+	addItemToCart(item, indexItem) {
+		var data = {}
+		if (this.state.isFilter) {
+			data = { ...item, cart: this.state.editFilteredProducts[indexItem].cart }
+		}else{
+			data = { ...item, cart: this.state.editFilterProducts[indexItem].cart }
+		}
+		this.props.addItem(data);
+	}
+
+	editItemState(indexItem, value) {
+		if (this.state.isFilter) {
+			var tmpItems = this.state.editFilteredProducts.map((a,index) => {
+				if (indexItem === index) {
+					a.cart = value
+				}
+				return a;
+			});
+
+			this.setState({
+				editFilteredProducts: tmpItems
+			})
+			return;
+		}
+		var tmpItems = this.state.editFilterProducts.map((a,index) => {
+			if (indexItem === index) {
+				a.cart = value
+			}
+			return a;
+		});
+
+		this.setState({
+			editFilterProducts: tmpItems
+		})
+	
 	}
 
 	render() {
@@ -108,7 +156,7 @@ class Products extends Component {
 				sorter: (a, b) => a.price.replace(/\D/g,'') - b.price.replace(/\D/g,''),
 				filterDropdown: (
 					<div className="custom-filter-dropdown">
-						<Slider range marks={this.state.priceRange} />
+						<Slider range min={this.state.minPrice} max={this.state.maxPrice} marks={this.state.priceRange} />
 						<Button type="primary" >Filtrar</Button>
 					</div>
 				),
@@ -121,7 +169,7 @@ class Products extends Component {
 				sorter: (a, b) => a.quantity - b.quantity,
 				filterDropdown: (
 					<div className="custom-filter-dropdown">
-						<Slider range marks={this.state.quantityRange} />
+						<Slider range min={this.state.minQuantity} max={this.state.maxQuantity} marks={this.state.quantityRange} />
 						<Button type="primary" >Filtrar</Button>
 					</div>
 				),
@@ -147,11 +195,11 @@ class Products extends Component {
 			}, {
 				title: '',
 				key: 'action',
-				render: (text, record) => (
+				render: (text, record, index) => (
 					<span>
-						<InputNumber min={1} max={record.quantity} defaultValue={1} onChange={(value) => {record.cart = value}} />
+						<InputNumber min={1} max={record.quantity} defaultValue={1} onChange={(value) => {this.editItemState(index, value)}} />
 						<Divider type='vertical' />
-						<Button type="primary" htmlType="submit" onClick={() => {this.addItemToCart(record);}} ><Icon type="shopping-cart" /></Button>
+						<Button type="primary" htmlType="submit" onClick={() => {this.addItemToCart(record, index);}} ><Icon type="shopping-cart" /></Button>
 					</span>
 				),
 			}
@@ -169,12 +217,14 @@ class Products extends Component {
 						/>
 					</Col>
 				</Row>
-				<Table 
-					rowKey='id' 
-					columns={columns} 
-					dataSource={this.state.isFilter ? this.state.filteredProducts : this.state.filterProducts} 
-					pagination={false} 
-				/>
+				<Row style={{ paddingTop: 10 }}>
+					<Table 
+						rowKey='id' 
+						columns={columns} 
+						dataSource={this.state.isFilter ? this.state.filteredProducts : this.state.filterProducts} 
+						pagination={false} 
+					/>
+				</Row>
 			</div>
 		);
 	}

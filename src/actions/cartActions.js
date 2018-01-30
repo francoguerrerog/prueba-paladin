@@ -20,3 +20,9 @@ export function editItem( item ) {
 		payload : item
 	}
 };
+
+export function checkOut() {
+	return {
+		type: types.CHECK_OUT
+	}
+}

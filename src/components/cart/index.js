@@ -1,8 +1,8 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
-import { Table, Icon, Divider, Slider, Button, InputNumber } from 'antd';
+import { Table, Icon, Divider, Slider, Button, InputNumber, Row, Col } from 'antd';
 
-import { editItem, removeItem } from '../../actions/cartActions';
+import { editItem, removeItem, checkOut } from '../../actions/cartActions';
 
 import '../../../index.css';
 
@@ -10,38 +10,41 @@ class Cart extends Component {
 	constructor(props) {
 		super(props);
 		this.state = {
-			items: []
+			items: [],
+			editItems: [],
+			totalPayment: 0
 		}
 	}
 
 	componentWillMount() {
-		//console.log(this.props.cartItems);
-		const tmpItems = this.props.cartItems.slice()//map((a) => a)
-		//console.log(tmpItems)
+		var tmpItems = this.props.cartItems.map((a) => {
+			return { isEditing: false, cart: a.cart, total: parseInt(a.price.replace(/\D/g,''))*a.cart };
+		})
+
 		this.setState({
-			items: tmpItems.map((a) => {
-				a.isEditing = false;
-				return a;
-			})
-		}, () =>{
-			//console.log(this.state.items);
+			items: this.props.cartItems,
+			editItems: tmpItems,
+			totalPayment: tmpItems.map((item) => { return item.total; }).
+			reduce((a, b) => { return a + b; }, 0)
 		})
 	}
 
 	componentWillReceiveProps(nextProps) {
+		var tmpItems = nextProps.cartItems.map((a) => {
+			return { isEditing: false, cart: a.cart, total: parseInt(a.price.replace(/\D/g,''))*a.cart };
+		})
+		
 		this.setState({
-			items: nextProps.cartItems.map((a) => {
-				a.isEditing = false;
-				return a;
-			})
-		}, () =>{
-			//console.log(this.state.items);
+			items: nextProps.cartItems,
+			editItems: tmpItems,
+			totalPayment: tmpItems.map((item) => { return item.total; }).
+			reduce((a, b) => { return a + b; }, 0)
 		})
 	}
 
-	enableEditingItem(item) {
-		var tmpItems = this.state.items.map((a) => {
-			if (a.id === item.id) {
+	enableEditingItem(indexItem) {
+		var tmpItems = this.state.editItems.map((a, index) => {
+			if (indexItem === index) {
 				a.isEditing = true
 			}else{
 				a.isEditing = false
@@ -50,16 +53,44 @@ class Cart extends Component {
 		});
 
 		this.setState({
-			items: tmpItems
+			editItems: tmpItems
+		})
+	}
+	
+	editItemState(indexItem, value) {
+		var tmpItems = this.state.editItems.map((a,index) => {
+			if (indexItem === index) {
+				a.cart = value
+			}
+			return a;
+		});
+
+		this.setState({
+			editItems: tmpItems
 		})
 	}
 
-	editItem(item) {
-		this.props.editItem(item);
+	editItem(item, indexItem) {
+		this.props.editItem({ ...item, cart: this.state.editItems[indexItem].cart });
 	}
 
 	removeItem(item) {
 		this.props.removeItem(item);
+	}
+
+	renderFooter() {
+		return (
+			<div>
+				<Row type="flex" justify="end">
+					<Col  xs={12} sm={8} md={6} lg={4} xl={4}>
+						<span>Total: ${this.state.totalPayment.toFixed(1).replace(/(\d)(?=(\d{3})+\.)/g, '$1,')}</span>
+					</Col>
+					<Col  xs={6} sm={6} md={4} lg={3} xl={3}>
+						<Button type='primary' onClick={() => this.props.checkOut()}>Pagar</Button>
+					</Col>
+				</Row>
+			</div>
+		);
 	}
 
 	render() {
@@ -84,12 +115,12 @@ class Cart extends Component {
 				title: 'Cantidad',
 				dataIndex: 'cart',
 				key: 'cart',
-				render: (text, record) => (
-					<div>{record.isEditing ? 
+				render: (text, record, index) => (
+					<div>{this.state.editItems.length > 0 && this.state.editItems[index].isEditing ? 
 						<span>
-							<InputNumber min={1} max={record.quantity} defaultValue={record.cart} onChange={(value) => {record.cart = value}} />
+							<InputNumber min={1} max={record.quantity} defaultValue={record.cart} onChange={(value) => {this.editItemState(index, value)}} />
 							<Divider type='vertical' />
-							<Button type="primary" htmlType="submit" onClick={() => {this.editItem(record)}} ><Icon type="select" /></Button>
+							<Button type="primary" htmlType="submit" onClick={() => {this.editItem(record, index)}} ><Icon type="select" /></Button>
 						</span> 
 					: 
 						<span>{record.cart}</span>
@@ -99,9 +130,9 @@ class Cart extends Component {
 			}, {
 				title: 'Acciones',
 				key: 'action',
-				render: (text, record) => (
+				render: (text, record, index) => (
 					<span>
-						<Button type="default" onClick={() => {this.enableEditingItem(record)}} ><Icon type="edit" /></Button>
+						<Button type="default" onClick={() => {this.enableEditingItem(index)}} ><Icon type="edit" /></Button>
 						<Divider type='vertical' />
 						<Button type="danger" onClick={() => {this.removeItem(record)}} ><Icon type="delete" /></Button>
 					</span>
@@ -115,8 +146,9 @@ class Cart extends Component {
 			<Table 
 				rowKey="id" 
 				columns={columns} 
-				dataSource={this.state.items} 
+				dataSource={this.state.items.map((a) => a)} 
 				pagination={false} 
+				footer={() => this.renderFooter()}
 			/>
 		</div>
 		);
@@ -124,7 +156,6 @@ class Cart extends Component {
 }
 
 function mapStateToProps( state ) {
-	console.log(state.cart.items);
 	return {
 		cartItems: state.cart.items
 	};
@@ -132,5 +163,6 @@ function mapStateToProps( state ) {
 
 export default connect(mapStateToProps, {
 	editItem,
-	removeItem
+	removeItem,
+	checkOut
 })(Cart);

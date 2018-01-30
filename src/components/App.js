@@ -64,14 +64,16 @@ class App extends Component {
 
 	render() {
 		return (
-			<Layout>
+			<Layout style={{height:'100vh'}}>
 				<Sider
 					breakpoint="lg"
 					collapsedWidth="0"
+					width={230}
+					style={{backgroundColor: '#2d3436'}}
 					onCollapse={(collapsed, type) => { console.log(collapsed, type); }}
 				>
 					<div className="logo" />
-					<Menu theme="dark" mode="inline" defaultSelectedKeys={['Home']}>
+					<Menu theme="dark" style={{backgroundColor: '#2d3436'}} mode="inline" defaultSelectedKeys={['Home']}>
 						<Menu.Item key="Home">
 							<div onClick={() => { browserHistory.push('/') }}>
 								<Icon type="home" />
@@ -87,14 +89,18 @@ class App extends Component {
 						</Menu.Item>
 					</Menu>
 				</Sider>
-				<Layout>
-					<Header style={{ background: '#fff', padding: 0 }} />
-					<Content style={{ margin: '24px 16px 0' }}>
-						<div style={{ padding: 24, background: '#fff', minHeight: 360 }}>
+				<Layout style={{backgroundColor: '#f1f2f6'}}>
+					<Header style={{ background: '#fff', padding: 0 }}>
+						<div className="logo">
+							<img src="/src/assets/paladin.png" />
+						</div>
+					</Header>
+					<Content style={{ margin: '24px 16px 0', background: '#fff' }}>
+						<div style={{ padding: 24, background: '#fff' }}>
 							{ this.props.children }
 						</div>
 					</Content>
-					<Footer style={{ textAlign: 'center' }}>
+					<Footer style={{ textAlign: 'center', backgroundColor: '#f1f2f6' }}>
 					Ant Design ©2016 Created by Ant UED
 					</Footer>
 				</Layout>

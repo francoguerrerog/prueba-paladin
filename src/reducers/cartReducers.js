@@ -21,7 +21,6 @@ function cartReducers( state = INITIAL_STATE, action ) {
 		var tmpItems = state.items.filter((a) => a.id !== action.payload.id);
 		return { ...state, items: tmpItems };
 	case types.EDIT_ITEM_CART:
-		console.log(state, action);
 		var tmpItems = state.items.map((a) => {
 			if (a.id === action.payload.id) {
 				a.cart = action.payload.cart
@@ -29,6 +28,8 @@ function cartReducers( state = INITIAL_STATE, action ) {
 			return a;
 		});
 		return { ...state, items: tmpItems };
+	case types.CHECK_OUT:
+		return{ ...state, items: [] };
 	default:
 		return state;
 	}
