@@ -177,10 +177,12 @@ class Products extends Component {
 				title: 'Nombre',
 				dataIndex: 'name',
 				key: 'name',
+				width: 200,
 			}, {
 				title: 'Precio',
 				dataIndex: 'price',
 				key: 'price',
+				width: 200,
 				sorter: (a, b) => a.price.replace(/\D/g,'') - b.price.replace(/\D/g,''),
 				filterDropdown: (
 					<div className="custom-filter-dropdown">
@@ -221,6 +223,7 @@ class Products extends Component {
 				title: 'Cantidad',
 				dataIndex: 'quantity',
 				key: 'quantity',
+				width: 200,
 				sorter: (a, b) => a.quantity - b.quantity,
 				filterDropdown: (
 					<div className="custom-filter-dropdown">
@@ -260,6 +263,7 @@ class Products extends Component {
 			}, {
 				title: 'Disponibilidad',
 				key: 'available',
+				width: 200,
 				filters: [
 					{
 						text: 'Disponible',
@@ -275,8 +279,10 @@ class Products extends Component {
 				onFilter: (value, record) => { return record.available == (value == 'true') },
 				sorter: (a, b) => a.available - b.available,
 			}, {
-				title: '',
+				title: 'Accion',
 				key: 'action',
+				fixed: 'right',
+				width: 200,
 				render: (text, record, index) => (
 					<span>
 						<InputNumber min={1} max={record.quantity} defaultValue={1} onChange={(value) => {this.editItemState(index, value)}} />
@@ -303,6 +309,7 @@ class Products extends Component {
 					<Table 
 						rowKey='id' 
 						columns={columns} 
+						scroll={{ x: 1000, y: 5000 }}
 						dataSource={this.state.isFilter ? this.state.filteredProducts : this.state.filterProducts} 
 						pagination={false} 
 					/>

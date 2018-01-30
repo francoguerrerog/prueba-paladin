@@ -99,11 +99,13 @@ class Cart extends Component {
 				title: 'Nombre',
 				dataIndex: 'name',
 				key: 'name',
+				width: 250,
 			}, {
 				title: 'Precio',
 				dataIndex: 'price',
 				key: 'price',
 				sorter: (a, b) => a.price.replace(/\D/g,'') - b.price.replace(/\D/g,''),
+				width: 200,
 			}, {
 				title: 'Disponibilidad',
 				key: 'available',
@@ -111,6 +113,7 @@ class Cart extends Component {
 					<span>{record.available ? 'Disponible' : 'No Disponible'}</span>
 				),
 				sorter: (a, b) => a.available - b.available,
+				width: 200,
 			}, {
 				title: 'Cantidad',
 				dataIndex: 'cart',
@@ -127,6 +130,7 @@ class Cart extends Component {
 					}</div>
 				),
 				sorter: (a, b) => a.quantity - b.quantity,
+				width: 200,
 			}, {
 				title: 'Acciones',
 				key: 'action',
@@ -137,6 +141,8 @@ class Cart extends Component {
 						<Button type="danger" onClick={() => {this.removeItem(record)}} ><Icon type="delete" /></Button>
 					</span>
 				),
+				fixed: 'right',
+				width: 150,
 			}
 		];
 
@@ -148,6 +154,7 @@ class Cart extends Component {
 				columns={columns} 
 				dataSource={this.state.items.map((a) => a)} 
 				pagination={false} 
+				scroll={{ x: 1000, y: 5000 }}
 				footer={() => this.renderFooter()}
 			/>
 		</div>
