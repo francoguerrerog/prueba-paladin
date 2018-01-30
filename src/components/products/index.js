@@ -18,14 +18,19 @@ class Products extends Component {
 			editFilterProducts: [],
 			sublevelId: 0,
 			sublevelName: 'Producto',
+			searchText: '',
 			isFilter: false,
+			isFilterPrice: false,
+			filterPrice: [],
+			isFilterQuantity: false,
+			filterQuantity: [],
 			filteredProducts: [],
 			editFilteredProducts: [],
 			filterPriceVisible: false,
 			priceRange: { 0: '0', 100: '100'},
 			minPrice: 0,
 			maxPrice: 100,
-			filterQantityVisible: false,
+			filterQuantityVisible: false,
 			quantityRange: { 0: '0', 100: '100'},
 			minQuantity: 0,
 			maxQuantity: 100
@@ -84,7 +89,12 @@ class Products extends Component {
 	}
 
 	searchProducts(value) {
-		if (value === '') {
+
+		if (this.state.searchText !== value) {
+			this.setState({ searchText: value })
+		}
+
+		if (value === '' && !this.state.isFilterPrice && !this.state.isFilterQuantity) {
 			this.setState({
 				isFilter: false,
 				filteredProducts: [],
@@ -92,9 +102,27 @@ class Products extends Component {
 			})
 			return;
 		}
-		const data = this.state.filterProducts.filter((a) => {
-			return a.name.includes(value);
-		})
+
+		var data = this.state.filterProducts
+
+		if (value !== '') {
+			data = data.filter((a) => {
+				return a.name.includes(value);
+			})
+		}
+
+		if (this.state.isFilterPrice) {
+			data = data.filter((a) => {
+				return parseInt(a.price.replace(/\D/g,'')) >= this.state.filterPrice[0] && parseInt(a.price.replace(/\D/g,'')) <= this.state.filterPrice[1];
+			})
+		}
+
+		if (this.state.isFilterQuantity) {
+			data = data.filter((a) => {
+				return a.quantity >= this.state.filterQuantity[0] && a.quantity <= this.state.filterQuantity[1];
+			})
+		}
+
 		var tmpItems = data.map((a) => {
 			return { cart: 1 };
 		})
@@ -156,10 +184,37 @@ class Products extends Component {
 				sorter: (a, b) => a.price.replace(/\D/g,'') - b.price.replace(/\D/g,''),
 				filterDropdown: (
 					<div className="custom-filter-dropdown">
-						<Slider range min={this.state.minPrice} max={this.state.maxPrice} marks={this.state.priceRange} />
-						<Button type="primary" >Filtrar</Button>
+						<Slider 
+							range 
+							min={this.state.minPrice} 
+							max={this.state.maxPrice} 
+							marks={this.state.priceRange} 
+							onAfterChange={(value) => this.setState({ filterPrice: value })} 
+						/>
+						<Button 
+							type="primary" 
+							onClick={() => { 
+								this.setState({ isFilterPrice: true, filterPriceVisible: false }, () => {
+									this.searchProducts(this.state.searchText);
+								});
+							}} 
+						>
+							<Icon type="search" />
+						</Button>
+						<Button 
+							type="danger" 
+							style={{ marginLeft: 10 }} 
+							onClick={() => { 
+								this.setState({ isFilterPrice: false, filterPriceVisible: false }, () => {
+									this.searchProducts(this.state.searchText);
+								});
+							}}
+						>
+							<Icon type="delete" />
+						</Button>
 					</div>
 				),
+				filterIcon: this.state.isFilterPrice ? <Icon type="filter" style={{ color: '#1890ff' }} /> : <Icon type="filter" />,
 				filterDropdownVisible: this.state.filterPriceVisible,
 				onFilterDropdownVisibleChange: visible => this.setState({ filterPriceVisible: visible }),
 			}, {
@@ -169,10 +224,37 @@ class Products extends Component {
 				sorter: (a, b) => a.quantity - b.quantity,
 				filterDropdown: (
 					<div className="custom-filter-dropdown">
-						<Slider range min={this.state.minQuantity} max={this.state.maxQuantity} marks={this.state.quantityRange} />
-						<Button type="primary" >Filtrar</Button>
+						<Slider 
+							range 
+							min={this.state.minQuantity} 
+							max={this.state.maxQuantity} 
+							marks={this.state.quantityRange} 
+							onAfterChange={(value) => this.setState({ filterQuantity: value })}
+						/>
+						<Button 
+							type="primary" 
+							onClick={() => { 
+								this.setState({ isFilterQuantity: true, filterQuantityVisible: false }, () => {
+									this.searchProducts(this.state.searchText);
+								});
+							}}
+						>
+							<Icon type="search" />
+						</Button>
+						<Button 
+							type="danger" 
+							style={{ marginLeft: 10 }} 
+							onClick={() => {
+								this.setState({ isFilterQuantity: false, filterQuantityVisible: false }, () => {
+									this.searchProducts(this.state.searchText);
+								});
+							}}
+						>
+							<Icon type="delete" />
+						</Button>
 					</div>
 				),
+				filterIcon: this.state.isFilterQuantity ? <Icon type="filter" style={{ color: '#1890ff' }} /> : <Icon type="filter" />,
 				filterDropdownVisible: this.state.filterQuantityVisible,
 				onFilterDropdownVisibleChange: visible => this.setState({ filterQuantityVisible: visible }),
 			}, {
