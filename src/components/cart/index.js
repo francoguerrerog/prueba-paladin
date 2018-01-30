@@ -86,7 +86,7 @@ class Cart extends Component {
 						<span>Total: ${this.state.totalPayment.toFixed(1).replace(/(\d)(?=(\d{3})+\.)/g, '$1,')}</span>
 					</Col>
 					<Col  xs={6} sm={6} md={4} lg={3} xl={3}>
-						<Button type='primary' onClick={() => this.props.checkOut()}>Pagar</Button>
+						<Button type='primary' onClick={() => this.props.checkOut(this.state.items)}>Pagar</Button>
 					</Col>
 				</Row>
 			</div>

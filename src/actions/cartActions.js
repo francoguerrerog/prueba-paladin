@@ -21,8 +21,9 @@ export function editItem( item ) {
 	}
 };
 
-export function checkOut() {
+export function checkOut( items ) {
 	return {
-		type: types.CHECK_OUT
+		type: types.CHECK_OUT,
+		payload: items
 	}
 }
